@@ -17,11 +17,11 @@ if ($action == 'ADMIN') {
         //GET /admin/users: Consultar lista de usuarios.
         print('mustro usuarios');
 
-    } else if ($requestMethod == 'POST' && $adminAction == 'USERS' && !empty($datosRecibidos)) {
+    } else if ($requestMethod == 'POST' && $adminAction == 'USERS' && $datosRecibidos) {
         //POST /admin/users: Crear un nuevo usuario (con detalles como nombre, rol, etc.).fv9h
         print('$datosRecibidos');
 
-    }else if ($requestMethod == 'PUT' && $adminAction == 'USERS' && isset($parametros[3]) && !empty($parametros[3]) && !empty($datosRecibidos)) {
+    }else if ($requestMethod == 'PUT' && $adminAction == 'USERS' && isset($parametros[3]) && !empty($parametros[3]) && $datosRecibidos) {
         //PUT /admin/users/{id}: Modificar detalles de un usuario existente (nombre, contraseña, rol, etc.).
         print($parametros[3]);
 
@@ -36,17 +36,17 @@ if ($action == 'ADMIN') {
 
 }else if($action == 'USER'){
     $userAction = isset($parametros[2]) && !empty($parametros[2]) ? strtoupper($parametros[2]) :'';
-    
-    if ($requestMethod == 'GET' && $userAction == 'PROFILE' && !empty($datosRecibidos)) {
+
+    if ($requestMethod == 'GET' && $userAction == 'PROFILE' && $datosRecibidos) {
         //GET /user/profile: Consultar información del perfil del usuario.
         print('mustro perfil');
 
-    } else if ($requestMethod == 'PUT' && $userAction == 'PROFILE' && !empty($datosRecibidos)) {
+    } else if ($requestMethod == 'PUT' && $userAction == 'PROFILE' && $datosRecibidos) {
         //PUT /user/profile: Modificar detalles del perfil (cambiar contraseña, nombre, etc.).
 
         print('$te llegara un gmail');
 
-    }else if ($requestMethod == 'GET' && $userAction == 'STATS' && !empty($datosRecibidos)) {
+    }else if ($requestMethod == 'GET' && $userAction == 'STATS' && $datosRecibidos) {
         //GET /user/stats: Consultar estadísticas del jugador (partidas ganadas, perdidas, etc.).
         print("te mostrara un json con las estadisticas");
 
