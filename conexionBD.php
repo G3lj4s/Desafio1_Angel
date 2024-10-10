@@ -53,6 +53,29 @@ class ConexionBD{
             return null;
         }
     }
+    public static function obtenerUsuarioEmail($email) {
+        $conexion = self::obtenerConexion();
+        if ($conexion === null) {
+            return null;
+        }
+    
+        $query = "SELECT * FROM usuario WHERE email = ?";
+        $stmt = $conexion->prepare($query);
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $resultados = $stmt->get_result();
+    
+        if ($resultados->num_rows != 0) {
+            $userData = $resultados->fetch_assoc();
+            $usuario = new Usuario($userData['id'], $userData['name'], $userData['email'], $userData['password'], $userData['admin']);
+            $conexion->close();
+            return $usuario;
+        } else {
+            $conexion->close();
+            return null;
+        }
+    }
+    
     public static function insertarUsuario($usuario) {
         $conexion = self::obtenerConexion();
         if ($conexion === null) {
@@ -60,12 +83,21 @@ class ConexionBD{
         }
         $query = "INSERT INTO usuario (name, email, password, admin) VALUES (?, ?, ?, ?)";
         $stmt = $conexion->prepare($query);
-        $stmt->bind_param("sssi", $usuario->getName(), $usuario->getEmail(), $usuario->getPassword(), $usuario->getAdmin());
+    
+        // Assign the return values to variables
+        $name = $usuario->getName();
+        $email = $usuario->getEmail();
+        $password = $usuario->getPassword();
+        $admin = $usuario->getAdmin();
+    
+        // Pass the variables to bind_param
+        $stmt->bind_param("sssi", $name, $email, $password, $admin);
         $resultado = $stmt->execute();
     
         $conexion->close();
         return $resultado;
     }
+    
     
     public static function eliminarUsuario($id) {
         $conexion = self::obtenerConexion();
@@ -89,7 +121,15 @@ class ConexionBD{
     
         $query = "UPDATE usuario SET name = ?, email = ?, password = ?, admin = ? WHERE id = ?";
         $stmt = $conexion->prepare($query);
-        $stmt->bind_param("sssii", $usuario->getName(), $usuario->getEmail(), $usuario->getPassword(), $usuario->getAdmin(), $usuario->getId());
+        $id = $usuario->getId();
+        $name = $usuario->getName();
+        $email = $usuario->getEmail();
+        $password = $usuario->getPassword();
+        $admin = $usuario->getAdmin();
+    
+        // Pass the variables to bind_param
+        $stmt->bind_param("sssii", $name, $email, $password, $admin, $id);
+        $resultado = $stmt->execute();
         $resultado = $stmt->execute();
     
         $conexion->close();

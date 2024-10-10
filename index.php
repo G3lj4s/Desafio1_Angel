@@ -2,6 +2,8 @@
 
 header("Content-Type:application/json");
 
+include_once("Controlador.php");
+
 $requestMethod = $_SERVER["REQUEST_METHOD"];
 $paths = $_SERVER['REQUEST_URI'];
 $parametros = explode("/",$paths);
@@ -15,19 +17,20 @@ if ($action == 'ADMIN') {
 
     if ($requestMethod == 'GET' && $adminAction == 'USERS') {
         //GET /admin/users: Consultar lista de usuarios.
-        echo json_encode(['message' => 'muestro usuarios']);
+        Controlador::mostrarUsuarios();
 
     } else if ($requestMethod == 'POST' && $adminAction == 'USERS' && $datosRecibidos) {
-        //POST /admin/users: Crear un nuevo usuario (con detalles como nombre, rol, etc.).fv9h
-        echo json_encode(['datosRecibidos' => $datosRecibidos]);
+        //POST /admin/users: Crear un nuevo usuario (con detalles como nombre, rol, etc.)
+        Controlador::crearUsuarios($datosRecibidos);
 
-    }else if ($requestMethod == 'PUT' && $adminAction == 'USERS' && isset($parametros[3]) && !empty($parametros[3]) && $datosRecibidos) {
-        //PUT /admin/users/{id}: Modificar detalles de un usuario existente (nombre, contraseña, rol, etc.).
-        echo json_encode(['id' => $parametros[3]]);
+    }else if ($requestMethod == 'PUT' && $adminAction == 'USERS' && $datosRecibidos) {
+        //PUT /admin/users: Modificar detalles de un usuario existente (nombre, contraseña, rol, etc.).
+        Controlador::modificarUsuario($datosRecibidos);
 
     }else if($requestMethod == 'DELETE' && $adminAction == 'USERS' && isset($parametros[3]) && !empty($parametros[3])){
-        //DELETE /admin/users/{id}: Eliminar un usuario por su ID.
-        echo json_encode(['id' => $parametros[3]]);
+        //DELETE /admin/users{$id}: Eliminar un usuario por su ID.
+        $id = $parametros[3];
+        Controlador::eliminarUsuario($id);
 
     }else {
         echo json_encode(['error' => 'error en la ruta de admin']);
@@ -38,7 +41,7 @@ if ($action == 'ADMIN') {
 
     if ($requestMethod == 'GET' && $userAction == 'PROFILE' && $datosRecibidos) {
         //GET /user/profile: Consultar información del perfil del usuario.
-        echo json_encode(['message' => 'muestro perfil']);
+        Controlador::mostrarPerfil($datosRecibidos);
 
     } else if ($requestMethod == 'PUT' && $userAction == 'PROFILE' && $datosRecibidos) {
         //PUT /user/profile: Modificar detalles del perfil (cambiar contraseña, nombre, etc.).
