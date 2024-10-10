@@ -15,23 +15,22 @@ if ($action == 'ADMIN') {
 
     if ($requestMethod == 'GET' && $adminAction == 'USERS') {
         //GET /admin/users: Consultar lista de usuarios.
-        print('mustro usuarios');
+        echo json_encode(['message' => 'muestro usuarios']);
 
     } else if ($requestMethod == 'POST' && $adminAction == 'USERS' && $datosRecibidos) {
         //POST /admin/users: Crear un nuevo usuario (con detalles como nombre, rol, etc.).fv9h
-        print('$datosRecibidos');
+        echo json_encode(['datosRecibidos' => $datosRecibidos]);
 
     }else if ($requestMethod == 'PUT' && $adminAction == 'USERS' && isset($parametros[3]) && !empty($parametros[3]) && $datosRecibidos) {
         //PUT /admin/users/{id}: Modificar detalles de un usuario existente (nombre, contraseña, rol, etc.).
-        print($parametros[3]);
+        echo json_encode(['id' => $parametros[3]]);
 
     }else if($requestMethod == 'DELETE' && $adminAction == 'USERS' && isset($parametros[3]) && !empty($parametros[3])){
         //DELETE /admin/users/{id}: Eliminar un usuario por su ID.
-        print($parametros[3]);
+        echo json_encode(['id' => $parametros[3]]);
 
     }else {
-        
-        print('error en la ruta de admin');
+        echo json_encode(['error' => 'error en la ruta de admin']);
     }
 
 }else if($action == 'USER'){
@@ -39,19 +38,18 @@ if ($action == 'ADMIN') {
 
     if ($requestMethod == 'GET' && $userAction == 'PROFILE' && $datosRecibidos) {
         //GET /user/profile: Consultar información del perfil del usuario.
-        print('mustro perfil');
+        echo json_encode(['message' => 'muestro perfil']);
 
     } else if ($requestMethod == 'PUT' && $userAction == 'PROFILE' && $datosRecibidos) {
         //PUT /user/profile: Modificar detalles del perfil (cambiar contraseña, nombre, etc.).
-
-        print('$te llegara un gmail');
+        echo json_encode(['message' => 'te llegará un email']);
 
     }else if ($requestMethod == 'GET' && $userAction == 'STATS' && $datosRecibidos) {
         //GET /user/stats: Consultar estadísticas del jugador (partidas ganadas, perdidas, etc.).
-        print("te mostrara un json con las estadisticas");
+        echo json_encode(['message' => 'te mostrará un json con las estadísticas']);
 
     }else{
-        print('error en la ruta de user');
+        echo json_encode(['error' => 'error en la ruta de user']);
     }
     
 }else if($action == 'GAMER'){
@@ -60,31 +58,31 @@ if ($action == 'ADMIN') {
     if ($requestMethod == 'POST' && $gameAction == 'CREATE'){
         if ($datosRecibidos) {
             //POST /gamer/create: crea una partida personalizada
-            print('Crea la partida con lo que le pase');
+            echo json_encode(['message' => 'Crea la partida con lo que le pase']);
         }else{
             //POST /gamer/create: crea una partida estandar
-            print("crea una partida aleatoria");
+            echo json_encode(['message' => 'crea una partida aleatoria']);
         }
     }else if ($requestMethod == 'POST' && $gameAction == 'DISTRIBUTE') {
         if ($datosRecibidos) {
             //POST /gamer/distribute: distribulle las tropas como se lo pases
-            print('distribucion como quieras');
+            echo json_encode(['message' => 'distribución como quieras']);
         }else{
             //POST /gamer/distribute: distrubulle las tropas automaticamente
-            print('distribucion automatica');
+            echo json_encode(['message' => 'distribución automática']);
         }
     }else if ($requestMethod == 'POST' && $gameAction == 'MOVE' && $datosRecibidos) {
         //POST /gamer/move: mueve tus tropas
-        print('se mueven las tropas');
+        echo json_encode(['message' => 'se mueven las tropas']);
     }else if($requestMethod == 'POST' && $gameAction == 'ATTACK' && $datosRecibidos){
         //POST /gamer/attack: realiza un ataque
-        print('se ataca');
+        echo json_encode(['message' => 'se ataca']);
     }else if($requestMethod == 'GET' && $gameAction == 'FINISH') {
         //POST /gamer/finish termina el tuno de el jugador y si el oponente es una maquina realiza su turno
-        print('cambio de turno');
+        echo json_encode(['message' => 'cambio de turno']);
     }else{
-        print('error ruta gamer');
+        echo json_encode(['error' => 'error ruta gamer']);
     }
 }else{
-    print('error rutas');
+    echo json_encode(['error' => 'error rutas']);
 }
