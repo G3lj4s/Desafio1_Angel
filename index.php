@@ -54,4 +54,37 @@ if ($action == 'ADMIN') {
         print('error en la ruta de user');
     }
     
+}else if($action == 'GAMER'){
+    $gameAction = isset($parametros[2]) && !empty($parametros[2]) ? strtoupper($parametros[2]) :'';
+    
+    if ($requestMethod == 'POST' && $gameAction == 'CREATE'){
+        if ($datosRecibidos) {
+            //POST /gamer/create: crea una partida personalizada
+            print('Crea la partida con lo que le pase');
+        }else{
+            //POST /gamer/create: crea una partida estandar
+            print("crea una partida aleatoria");
+        }
+    }else if ($requestMethod == 'POST' && $gameAction == 'DISTRIBUTE') {
+        if ($datosRecibidos) {
+            //POST /gamer/distribute: distribulle las tropas como se lo pases
+            print('distribucion como quieras');
+        }else{
+            //POST /gamer/distribute: distrubulle las tropas automaticamente
+            print('distribucion automatica');
+        }
+    }else if ($requestMethod == 'POST' && $gameAction == 'MOVE' && $datosRecibidos) {
+        //POST /gamer/move: mueve tus tropas
+        print('se mueven las tropas');
+    }else if($requestMethod == 'POST' && $gameAction == 'ATTACK' && $datosRecibidos){
+        //POST /gamer/attack: realiza un ataque
+        print('se ataca');
+    }else if($requestMethod == 'GET' && $gameAction == 'FINISH') {
+        //POST /gamer/finish termina el tuno de el jugador y si el oponente es una maquina realiza su turno
+        print('cambio de turno');
+    }else{
+        print('error ruta gamer');
+    }
+}else{
+    print('error rutas');
 }
