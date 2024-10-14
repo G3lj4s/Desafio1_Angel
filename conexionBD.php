@@ -70,10 +70,9 @@ class ConexionBD{
             $usuario = new Usuario($userData['id'], $userData['name'], $userData['email'], $userData['password'], $userData['admin']);
             $conexion->close();
             return $usuario;
-        } else {
-            $conexion->close();
-            return null;
         }
+        $conexion->close();
+        return null;
     }
     
     public static function insertarUsuario($usuario) {

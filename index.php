@@ -15,9 +15,9 @@ $action = strtoupper($parametros[1]);
 if ($action == 'ADMIN') {
     $adminAction = isset($parametros[2]) && !empty($parametros[2]) ? strtoupper($parametros[2]) :'';
 
-    if ($requestMethod == 'GET' && $adminAction == 'USERS') {
+    if ($requestMethod == 'GET' && $adminAction == 'USERS' && $datosRecibidos) {
         //GET /admin/users: Consultar lista de usuarios.
-        Controlador::mostrarUsuarios();
+        Controlador::mostrarUsuarios($datosRecibidos);
 
     } else if ($requestMethod == 'POST' && $adminAction == 'USERS' && $datosRecibidos) {
         //POST /admin/users: Crear un nuevo usuario (con detalles como nombre, rol, etc.)
@@ -30,7 +30,7 @@ if ($action == 'ADMIN') {
     }else if($requestMethod == 'DELETE' && $adminAction == 'USERS' && isset($parametros[3]) && !empty($parametros[3])){
         //DELETE /admin/users{$id}: Eliminar un usuario por su ID.
         $id = $parametros[3];
-        Controlador::eliminarUsuario($id);
+        Controlador::eliminarUsuario($id,$datosRecibidos);
 
     }else {
         echo json_encode(['error' => 'error en la ruta de admin']);
@@ -44,7 +44,7 @@ if ($action == 'ADMIN') {
         Controlador::mostrarPerfil($datosRecibidos);
 
     } else if ($requestMethod == 'PUT' && $userAction == 'PROFILE' && $datosRecibidos) {
-        //PUT /user/profile: Modificar detalles del perfil (cambiar contraseña, nombre, etc.).
+        //PUT /user/profile: Modificar detalles del perfil (cambiar contraseña que genere el servido y la pasa al gmail asociado).
         echo json_encode(['message' => 'te llegará un email']);
 
     }else if ($requestMethod == 'GET' && $userAction == 'STATS' && $datosRecibidos) {
