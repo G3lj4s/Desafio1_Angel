@@ -45,7 +45,7 @@ if ($action == 'ADMIN') {
 
     } else if ($requestMethod == 'PUT' && $userAction == 'PROFILE' && $datosRecibidos) {
         //PUT /user/profile: Modificar detalles del perfil (cambiar contraseña que genere el servido y la pasa al gmail asociado).
-        echo json_encode(['message' => 'te llegará un email']);
+        Controlador::cambiarPassword($datosRecibidos);
 
     }else if ($requestMethod == 'GET' && $userAction == 'STATS' && $datosRecibidos) {
         //GET /user/stats: Consultar estadísticas del jugador (partidas ganadas, perdidas, etc.).
