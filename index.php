@@ -4,6 +4,7 @@ header("Content-Type:application/json");
 
 require_once __DIR__ . "/Controlador/ControladorAdmin.php";
 require_once __DIR__ . "/Controlador/ControladorUsuario.php";
+require_once __DIR__ . "/Controlador/ControladorJuego.php";
 
 $requestMethod = $_SERVER["REQUEST_METHOD"];
 $paths = $_SERVER['REQUEST_URI'];
@@ -60,29 +61,34 @@ if ($action == 'ADMIN') {
     $gameAction = isset($parametros[2]) && !empty($parametros[2]) ? strtoupper($parametros[2]) :'';
     
     if ($requestMethod == 'POST' && $gameAction == 'CREATE' && $datosRecibidos){
-        if ($datosRecibidos) {
-            //POST /gamer/create: crea una partida personalizada
-            echo json_encode(['message' => 'Crea la partida con lo que le pase']);
-        }else{
-            //POST /gamer/create: crea una partida estandar
-            echo json_encode(['message' => 'crea una partida aleatoria']);
-        }
+        // if ($datosRecibidos) {
+        //     //POST /gamer/create: crea una partida personalizada
+        //     echo json_encode(['message' => 'Crea la partida con lo que le pase']);
+        // }else{
+        //     //POST /gamer/create: crea una partida estandar
+        //     echo json_encode(['message' => 'crea una partida aleatoria']);
+        // }
+        ControladorJuego::iniciarPartida();
     }else if ($requestMethod == 'POST' && $gameAction == 'DISTRIBUTE' && $datosRecibidos) {
-        if ($datosRecibidos) {
-            //POST /gamer/distribute: distribulle las tropas como se lo pases
-            echo json_encode(['message' => 'distribución como quieras']);
-        }else{
-            //POST /gamer/distribute: distrubulle las tropas automaticamente
-            echo json_encode(['message' => 'distribución automática']);
-        }
+        // if ($datosRecibidos) {
+        //     //POST /gamer/distribute: distribulle las tropas como se lo pases
+        //     echo json_encode(['message' => 'distribución como quieras']);
+        // }else{
+        //     //POST /gamer/distribute: distrubulle las tropas automaticamente
+        //     echo json_encode(['message' => 'distribución automática']);
+        // }
+        ControladorJuego::distribuir();
     }else if ($requestMethod == 'POST' && $gameAction == 'MOVE' && $datosRecibidos) {
         //POST /gamer/move: mueve tus tropas
+            ControladorJuego::mover();
         echo json_encode(['message' => 'se mueven las tropas']);
     }else if($requestMethod == 'POST' && $gameAction == 'ATTACK' && $datosRecibidos){
         //POST /gamer/attack: realiza un ataque
+        ControladorJuego::atacar();
         echo json_encode(['message' => 'se ataca']);
     }else if($requestMethod == 'GET' && $gameAction == 'FINISH') {
         //POST /gamer/finish termina el tuno de el jugador y si el oponente es una maquina realiza su turno
+        ControladorJuego::cambiarTurno();
         echo json_encode(['message' => 'cambio de turno']);
     }else{
         echo json_encode(['error' => 'error ruta gamer']);

@@ -7,7 +7,7 @@ class ConexionBDUsuario {
         if ($conexion === null) {
             return null;
         }
-        $query = "SELECT * FROM usuario";
+        $query = "SELECT * FROM usuarios";
         $stmt = $conexion->prepare($query);
         $stmt->execute();
         $resultados = $stmt->get_result();
@@ -30,7 +30,7 @@ class ConexionBDUsuario {
             return null;
         }
 
-        $query = "SELECT * FROM usuario where id = ?";
+        $query = "SELECT * FROM usuarios where id = ?";
         $stmt = $conexion->prepare($query);
         $stmt->bind_param("i", $id);
         $stmt->execute();
@@ -52,7 +52,7 @@ class ConexionBDUsuario {
             return null;
         }
     
-        $query = "SELECT * FROM usuario WHERE email = ?";
+        $query = "SELECT * FROM usuarios WHERE email = ?";
         $stmt = $conexion->prepare($query);
         $stmt->bind_param("s", $email);
         $stmt->execute();
@@ -73,7 +73,7 @@ class ConexionBDUsuario {
         if ($conexion === null) {
             return false;
         }
-        $query = "INSERT INTO usuario (name, email, password, admin) VALUES (?, ?, ?, ?)";
+        $query = "INSERT INTO usuarios (name, email, password, admin) VALUES (?, ?, ?, ?)";
         $stmt = $conexion->prepare($query);
     
         // Assign the return values to variables
@@ -97,7 +97,7 @@ class ConexionBDUsuario {
             return false;
         }
     
-        $query = "DELETE FROM usuario WHERE id = ?";
+        $query = "DELETE FROM usuarios WHERE id = ?";
         $stmt = $conexion->prepare($query);
         $stmt->bind_param("i", $id);
         $resultado = $stmt->execute();
@@ -111,7 +111,7 @@ class ConexionBDUsuario {
             return false;
         }
     
-        $query = "UPDATE usuario SET name = ?, email = ?, password = ?, admin = ? WHERE id = ?";
+        $query = "UPDATE usuarios SET name = ?, email = ?, password = ?, admin = ? WHERE id = ?";
         $stmt = $conexion->prepare($query);
         $id = $usuario->getId();
         $name = $usuario->getName();
