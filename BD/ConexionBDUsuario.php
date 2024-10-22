@@ -1,16 +1,9 @@
 <?php
-include("Usuario.php");
-class ConexionBD{
-    public static function obtenerConexionBD() {
-        try {
-            return new mysqli('localhost', 'angel', '1234', 'risk');
-        } catch (Exception $e) {
-            return null;
-        }
-    }
-    
+
+require_once  __DIR__ . "/ConexionBD.php";
+class ConexionBDUsuario {
     public static function obtenerUsuarios() {
-        $conexion = self::obtenerConexionBD();
+        $conexion = ConexionBD::obtenerConexionBD();
         if ($conexion === null) {
             return null;
         }
@@ -32,7 +25,7 @@ class ConexionBD{
         }
     }
     public static function obtenerUsuarioId($id) {
-        $conexion = self::obtenerConexionBD();
+        $conexion = ConexionBD::obtenerConexionBD();
         if ($conexion === null) {
             return null;
         }
@@ -54,7 +47,7 @@ class ConexionBD{
         }
     }
     public static function obtenerUsuarioEmail($email) {
-        $conexion = self::obtenerConexionBD();
+        $conexion = ConexionBD::obtenerConexionBD();
         if ($conexion === null) {
             return null;
         }
@@ -76,7 +69,7 @@ class ConexionBD{
     }
     
     public static function insertarUsuario($usuario) {
-        $conexion = self::obtenerConexionBD();
+        $conexion = ConexionBD::obtenerConexionBD();
         if ($conexion === null) {
             return false;
         }
@@ -99,7 +92,7 @@ class ConexionBD{
     
     
     public static function eliminarUsuario($id) {
-        $conexion = self::obtenerConexionBD();
+        $conexion = ConexionBD::obtenerConexionBD();
         if ($conexion === null) {
             return false;
         }
@@ -113,7 +106,7 @@ class ConexionBD{
         return $resultado;
     }
     public static function actualizarUsuario($usuario) {
-        $conexion = self::obtenerConexionBD();
+        $conexion = ConexionBD::obtenerConexionBD();
         if ($conexion === null) {
             return false;
         }
@@ -134,5 +127,4 @@ class ConexionBD{
         $conexion->close();
         return $resultado;
     }
-    
 }

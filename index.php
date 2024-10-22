@@ -2,7 +2,8 @@
 
 header("Content-Type:application/json");
 
-include_once("Controlador.php");
+require_once __DIR__ . "/Controlador/ControladorAdmin.php";
+require_once __DIR__ . "/Controlador/ControladorUsuario.php";
 
 $requestMethod = $_SERVER["REQUEST_METHOD"];
 $paths = $_SERVER['REQUEST_URI'];
@@ -17,20 +18,20 @@ if ($action == 'ADMIN') {
 
     if ($requestMethod == 'GET' && $adminAction == 'USERS' && $datosRecibidos) {
         //GET /admin/users: Consultar lista de usuarios.
-        Controlador::mostrarUsuarios($datosRecibidos);
+        ControladorAdmin::mostrarUsuarios($datosRecibidos);
 
     } else if ($requestMethod == 'POST' && $adminAction == 'USERS' && $datosRecibidos) {
         //POST /admin/users: Crear un nuevo usuario (con detalles como nombre, rol, etc.)
-        Controlador::crearUsuarios($datosRecibidos);
+        ControladorAdmin::crearUsuarios($datosRecibidos);
 
     }else if ($requestMethod == 'PUT' && $adminAction == 'USERS' && $datosRecibidos) {
         //PUT /admin/users: Modificar detalles de un usuario existente (nombre, contraseña, rol, etc.).
-        Controlador::modificarUsuario($datosRecibidos);
+        ControladorAdmin::modificarUsuario($datosRecibidos);
 
     }else if($requestMethod == 'DELETE' && $adminAction == 'USERS' && isset($parametros[3]) && !empty($parametros[3])){
         //DELETE /admin/users{$id}: Eliminar un usuario por su ID.
         $id = $parametros[3];
-        Controlador::eliminarUsuario($id,$datosRecibidos);
+        ControladorAdmin::eliminarUsuario($id,$datosRecibidos);
 
     }else {
         echo json_encode(['error' => 'error en la ruta de admin']);
@@ -41,11 +42,11 @@ if ($action == 'ADMIN') {
 
     if ($requestMethod == 'GET' && $userAction == 'PROFILE' && $datosRecibidos) {
         //GET /user/profile: Consultar información del perfil del usuario.
-        Controlador::mostrarPerfil($datosRecibidos);
+        ControladorUsuario::mostrarPerfil($datosRecibidos);
 
     } else if ($requestMethod == 'PUT' && $userAction == 'PROFILE' && $datosRecibidos) {
         //PUT /user/profile: Modificar detalles del perfil (cambiar contraseña que genere el servido y la pasa al gmail asociado).
-        Controlador::cambiarPassword($datosRecibidos);
+        ControladorUsuario::cambiarPassword($datosRecibidos);
 
     }else if ($requestMethod == 'GET' && $userAction == 'STATS' && $datosRecibidos) {
         //GET /user/stats: Consultar estadísticas del jugador (partidas ganadas, perdidas, etc.).
@@ -58,7 +59,7 @@ if ($action == 'ADMIN') {
 }else if($action == 'GAMER'){
     $gameAction = isset($parametros[2]) && !empty($parametros[2]) ? strtoupper($parametros[2]) :'';
     
-    if ($requestMethod == 'POST' && $gameAction == 'CREATE'){
+    if ($requestMethod == 'POST' && $gameAction == 'CREATE' && $datosRecibidos){
         if ($datosRecibidos) {
             //POST /gamer/create: crea una partida personalizada
             echo json_encode(['message' => 'Crea la partida con lo que le pase']);
@@ -66,7 +67,7 @@ if ($action == 'ADMIN') {
             //POST /gamer/create: crea una partida estandar
             echo json_encode(['message' => 'crea una partida aleatoria']);
         }
-    }else if ($requestMethod == 'POST' && $gameAction == 'DISTRIBUTE') {
+    }else if ($requestMethod == 'POST' && $gameAction == 'DISTRIBUTE' && $datosRecibidos) {
         if ($datosRecibidos) {
             //POST /gamer/distribute: distribulle las tropas como se lo pases
             echo json_encode(['message' => 'distribución como quieras']);
