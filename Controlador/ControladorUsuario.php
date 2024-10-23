@@ -1,5 +1,4 @@
 <?php
-    require_once  __DIR__ . "/../BD/ConexionBDUsuario.php";
     require_once  __DIR__ . "/../model/Usuario.php";
     require_once  __DIR__ . "/../Mail/ConexionMail.php";
 class ControladorUsuario{

@@ -61,22 +61,13 @@ if ($action == 'ADMIN') {
     $gameAction = isset($parametros[2]) && !empty($parametros[2]) ? strtoupper($parametros[2]) :'';
     
     if ($requestMethod == 'POST' && $gameAction == 'CREATE' && $datosRecibidos){
-        // if ($datosRecibidos) {
-        //     //POST /gamer/create: crea una partida personalizada
-        //     echo json_encode(['message' => 'Crea la partida con lo que le pase']);
-        // }else{
-        //     //POST /gamer/create: crea una partida estandar
-        //     echo json_encode(['message' => 'crea una partida aleatoria']);
-        // }
-        ControladorJuego::iniciarPartida();
+        //POST /gamer/create${numerocasillas?}/${numerotropas}: crea una partida personalizada o crea una partida estandar
+        $numCasillas = isset($parametros[3]) && !empty($parametros[3]) ? intval($parametros[3]) : 0;
+        $numTropas = isset($parametros[4]) && !empty($parametros[4]) ? intval($parametros[4]) : 0;
+
+        ControladorJuego::iniciarPartida($datosRecibidos, $numCasillas, $numTropas);
     }else if ($requestMethod == 'POST' && $gameAction == 'DISTRIBUTE' && $datosRecibidos) {
-        // if ($datosRecibidos) {
-        //     //POST /gamer/distribute: distribulle las tropas como se lo pases
-        //     echo json_encode(['message' => 'distribución como quieras']);
-        // }else{
-        //     //POST /gamer/distribute: distrubulle las tropas automaticamente
-        //     echo json_encode(['message' => 'distribución automática']);
-        // }
+        //POST /gamer/distribute: distribulle las tropas como se lo pases o distrubulle las tropas automaticamente
         ControladorJuego::distribuir();
     }else if ($requestMethod == 'POST' && $gameAction == 'MOVE' && $datosRecibidos) {
         //POST /gamer/move: mueve tus tropas

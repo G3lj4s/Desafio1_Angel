@@ -76,13 +76,11 @@ class ConexionBDUsuario {
         $query = "INSERT INTO usuarios (name, email, password, admin) VALUES (?, ?, ?, ?)";
         $stmt = $conexion->prepare($query);
     
-        // Assign the return values to variables
         $name = $usuario->getName();
         $email = $usuario->getEmail();
         $password = $usuario->getPassword();
         $admin = $usuario->getAdmin();
     
-        // Pass the variables to bind_param
         $stmt->bind_param("sssi", $name, $email, $password, $admin);
         $resultado = $stmt->execute();
     
@@ -119,7 +117,6 @@ class ConexionBDUsuario {
         $password = $usuario->getPassword();
         $admin = $usuario->getAdmin();
     
-        // Pass the variables to bind_param
         $stmt->bind_param("sssii", $name, $email, $password, $admin, $id);
         $resultado = $stmt->execute();
         $resultado = $stmt->execute();
