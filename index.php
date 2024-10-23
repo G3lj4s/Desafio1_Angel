@@ -51,7 +51,7 @@ if ($action == 'ADMIN') {
 
     }else if ($requestMethod == 'GET' && $userAction == 'STATS' && $datosRecibidos) {
         //GET /user/stats: Consultar estadísticas del jugador (partidas ganadas, perdidas, etc.).
-        echo json_encode(['message' => 'te mostrará un json con las estadísticas']);
+        ControladorUsuario::mostrarStats($datosRecibidos);
 
     }else{
         echo json_encode(['error' => 'error en la ruta de user']);

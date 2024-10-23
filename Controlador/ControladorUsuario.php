@@ -47,4 +47,32 @@ class ControladorUsuario{
             echo json_encode(['message' => 'datos incompletos']);
         }
     }
+    public static function mostrarStats($datosRecibidos){
+        $datosRecibidos = json_decode($datosRecibidos, true);
+    
+        if (!isset($datosRecibidos['email']) || !isset($datosRecibidos['password'])) {
+            echo json_encode(['message' => 'datos incompletos']);
+            return;
+        }
+    
+        $usuario = ConexionBDUsuario::obtenerUsuarioEmail($datosRecibidos['email']);
+    
+        if ($usuario == null) {
+            echo json_encode(['message' => 'este usuario no existe en el sistema']);
+            return;
+        }
+    
+        if ($usuario->getPassword() != $datosRecibidos['password']) {
+            echo json_encode(['message' => 'la password del usuario no es correcta']);
+            return;
+        }
+        $partidasEmpezadas = ConexionBDPartida::numPartidasPorEstado($usuario->getId(), 0);
+        $partidasGanadas = ConexionBDPartida::numPartidasPorEstado($usuario->getId(), 1);
+        $partidasPedidas = ConexionBDPartida::numPartidasPorEstado($usuario->getId(), 2);
+        echo json_encode([
+            'Empezadas' => $partidasEmpezadas,
+            'Ganadas'=> $partidasGanadas,
+            'Perdidas'=> $partidasPedidas
+        ]);
+    }
 }
