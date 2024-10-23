@@ -14,7 +14,11 @@ class ConexionBDUsuario {
         $usuarios = [];
         if ($resultados->num_rows != 0) {
             while ($userData = $resultados->fetch_assoc()) {
-                $usuario = new Usuario($userData['id'], $userData['name'], $userData['email'], $userData['password'], $userData['admin']);
+                $usuario = new Usuario($userData['id'],
+                 $userData['name'],
+                $userData['email'],
+             $userData['password'],
+                $userData['admin']);
                 $usuarios[] = $usuario;
             }
             $conexion->close();
@@ -38,7 +42,12 @@ class ConexionBDUsuario {
 
         if ($resultados->num_rows != 0) {
            $userData = $resultados->fetch_assoc();
-            $usuario = new Usuario($userData['id'], $userData['name'], $userData['email'], $userData['password'], $userData['admin']);
+            $usuario = new Usuario(
+              $userData['id'],
+            $userData['name'],
+           $userData['email'],
+        $userData['password'],
+                $userData['admin']);
             $conexion->close();
             return $usuario;
         } else {
@@ -60,7 +69,12 @@ class ConexionBDUsuario {
     
         if ($resultados->num_rows != 0) {
             $userData = $resultados->fetch_assoc();
-            $usuario = new Usuario($userData['id'], $userData['name'], $userData['email'], $userData['password'], $userData['admin']);
+            $usuario = new Usuario(
+               $userData['id'],
+             $userData['name'],
+            $userData['email'], 
+         $userData['password'],
+            $userData['admin']);
             $conexion->close();
             return $usuario;
         }
@@ -118,7 +132,6 @@ class ConexionBDUsuario {
         $admin = $usuario->getAdmin();
     
         $stmt->bind_param("sssii", $name, $email, $password, $admin, $id);
-        $resultado = $stmt->execute();
         $resultado = $stmt->execute();
     
         $conexion->close();

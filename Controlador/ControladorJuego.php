@@ -6,6 +6,33 @@ require_once  __DIR__ . "/../BD/ConexionBDUsuario.php";
 require_once __DIR__ . "/../Factory/TerritorioFactory.php";
 
 class ControladorJuego{
+    public static function verPartida($datosRecibidos, $idPartida){
+        $datosRecibidos = json_decode($datosRecibidos, true);
+    
+        if (!isset($datosRecibidos['email']) || !isset($datosRecibidos['password'])) {
+            echo json_encode(['message' => 'datos incompletos']);
+            return;
+        }
+    
+        $usuario = ConexionBDUsuario::obtenerUsuarioEmail($datosRecibidos['email']);
+    
+        if ($usuario == null) {
+            echo json_encode(['message' => 'este usuario no existe en el sistema']);
+            return;
+        }
+    
+        if ($usuario->getPassword() != $datosRecibidos['password']) {
+            echo json_encode(['message' => 'la password del usuario no es correcta']);
+            return;
+        }
+        $partida = ConexionBDPartida::obtenerPartida($idPartida, $usuario->getId());
+        if ($partida == null) {
+            echo json_encode(['message' => 'error al encontrar la partida']);
+            return;
+        }
+        
+        echo json_encode(['Partida' => $partida]);
+    }
     public static function iniciarPartida($datosRecibidos, $numCasillas, $numTropas) {
         $datosRecibidos = json_decode($datosRecibidos, true);
     
@@ -25,8 +52,9 @@ class ControladorJuego{
             echo json_encode(['message' => 'la password del usuario no es correcta']);
             return;
         }
-        $numPartidas = ConexionBDPartida::numPartidasPorEstado($usuario->getId(),0);
-        if ($numPartidas >= 2) {
+        $numPartidasCreadas = ConexionBDPartida::numPartidasPorEstado($usuario->getId(),0);
+        $numPartidasIniciada = ConexionBDPartida::numPartidasPorEstado($usuario->getId(),0);
+        if ($numPartidasCreadas+$numPartidasIniciada >= 2) {
             echo json_encode(['message' => 'ya tienes dos partidas abiertas']);
             return;
         }
@@ -51,16 +79,75 @@ class ControladorJuego{
         echo json_encode(['message' => 'partida creada con id: ' . $idPartida]);
     }
     
-    public static function distribuir(){
+    public static function distribuir($datosRecibidos, $idPartida){
+        $datosRecibidos = json_decode($datosRecibidos, true);
+    
+        if (!isset($datosRecibidos['email']) || !isset($datosRecibidos['password'])) {
+            echo json_encode(['message' => 'datos incompletos']);
+            return;
+        }
+    
+        $usuario = ConexionBDUsuario::obtenerUsuarioEmail($datosRecibidos['email']);
+    
+        if ($usuario == null) {
+            echo json_encode(['message' => 'este usuario no existe en el sistema']);
+            return;
+        }
+    
+        if ($usuario->getPassword() != $datosRecibidos['password']) {
+            echo json_encode(['message' => 'la password del usuario no es correcta']);
+            return;
+        }
+        $partida = ConexionBDPartida::obtenerPartida($idPartida, $usuario->getId());
+        if ($partida == null) {
+            echo json_encode(['message' => 'error al encontrar la partida']);
+            return;
+        }
+        if ($partida->getEstado() != 0) {
+            echo json_encode(['message' => 'no puedes distribuir varias veces']);
+            return;
+        }
+        if (isset($datosRecibidos['distribucion'])) {
+            $numTropas = $partida->contarTropasUsuario($datosRecibidos['distribucion']);
+            if (($partida->getNumTropas()/2) != $numTropas) {
+                echo json_encode(['message' => 'el numero de tropas a repartir no es el correcto tienes que repartir '.($partida->getNumTropas()/2).' y estas repartirendo '.$numTropas]);
+                return;
+            }
+            $partida->distribuirTropasManual($datosRecibidos['distribucion'],'U');
+            $partida->distribuirTropasAleatoriamente('M');
+        }else{
+            $partida->distribuirTropasAleatoriamente('U');
+            $partida->distribuirTropasAleatoriamente('M');
+        }
+        $partida->setEstado('1');
+        ConexionBDPartida::actualizarTerritorios($partida->getTerritorios());
+        ConexionBDPartida::actualizarPartida($partida);
+        echo json_encode(['message' => ['listo para jugar' => $partida]]);
+    }
+    public static function mover($datosRecibidos){
+        $datosRecibidos = json_decode($datosRecibidos, true);
+    
+        if (!isset($datosRecibidos['email']) || !isset($datosRecibidos['password'])) {
+            echo json_encode(['message' => 'datos incompletos']);
+            return;
+        }
+    
+        $usuario = ConexionBDUsuario::obtenerUsuarioEmail($datosRecibidos['email']);
+    
+        if ($usuario == null) {
+            echo json_encode(['message' => 'este usuario no existe en el sistema']);
+            return;
+        }
+    
+        if ($usuario->getPassword() != $datosRecibidos['password']) {
+            echo json_encode(['message' => 'la password del usuario no es correcta']);
+            return;
+        }
+    }
+    public static function atacar($datosRecibidos){
         
     }
-    public static function mover(){
-        
-    }
-    public static function atacar(){
-        
-    }
-    public static function cambiarTurno(){
+    public static function cambiarTurno($datosRecibidos){
         
     }
 }

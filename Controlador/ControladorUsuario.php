@@ -66,9 +66,9 @@ class ControladorUsuario{
             echo json_encode(['message' => 'la password del usuario no es correcta']);
             return;
         }
-        $partidasEmpezadas = ConexionBDPartida::numPartidasPorEstado($usuario->getId(), 0);
-        $partidasGanadas = ConexionBDPartida::numPartidasPorEstado($usuario->getId(), 1);
-        $partidasPedidas = ConexionBDPartida::numPartidasPorEstado($usuario->getId(), 2);
+        $partidasEmpezadas = ConexionBDPartida::numPartidasPorEstado($usuario->getId(), 1); 
+        $partidasGanadas = ConexionBDPartida::numPartidasPorEstado($usuario->getId(), 2);
+        $partidasPedidas = ConexionBDPartida::numPartidasPorEstado($usuario->getId(), 3);
         echo json_encode([
             'Empezadas' => $partidasEmpezadas,
             'Ganadas'=> $partidasGanadas,

@@ -68,18 +68,23 @@ if ($action == 'ADMIN') {
         ControladorJuego::iniciarPartida($datosRecibidos, $numCasillas, $numTropas);
     }else if ($requestMethod == 'POST' && $gameAction == 'DISTRIBUTE' && $datosRecibidos) {
         //POST /gamer/distribute: distribulle las tropas como se lo pases o distrubulle las tropas automaticamente
-        ControladorJuego::distribuir();
+        $idPartida = isset($parametros[3]) && !empty($parametros[3]) ? intval($parametros[3]) : 0;
+        
+        ControladorJuego::distribuir($datosRecibidos,$idPartida);
+    }else if ($requestMethod == 'GET' && $gameAction == 'VIEW' && $datosRecibidos){
+        //GET /gamer/view: muestra la partida
+        $idPartida = isset($parametros[3]) && !empty($parametros[3]) ? intval($parametros[3]) : 0;
+        ControladorJuego::verPartida($datosRecibidos, $idPartida);
     }else if ($requestMethod == 'POST' && $gameAction == 'MOVE' && $datosRecibidos) {
         //POST /gamer/move: mueve tus tropas
-            ControladorJuego::mover();
-        echo json_encode(['message' => 'se mueven las tropas']);
+            ControladorJuego::mover($datosRecibidos);
     }else if($requestMethod == 'POST' && $gameAction == 'ATTACK' && $datosRecibidos){
         //POST /gamer/attack: realiza un ataque
-        ControladorJuego::atacar();
+        ControladorJuego::atacar($datosRecibidos);
         echo json_encode(['message' => 'se ataca']);
     }else if($requestMethod == 'GET' && $gameAction == 'FINISH') {
         //POST /gamer/finish termina el tuno de el jugador y si el oponente es una maquina realiza su turno
-        ControladorJuego::cambiarTurno();
+        ControladorJuego::cambiarTurno($datosRecibidos);
         echo json_encode(['message' => 'cambio de turno']);
     }else{
         echo json_encode(['error' => 'error ruta gamer']);

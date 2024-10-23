@@ -2,7 +2,7 @@
 class TerritorioFactory {
     public static function crearTerritorio($propietario) {
         $nombre = self::generarNombreAleatorio();
-        return new Territorio($nombre, $propietario, 0);
+        return new Territorio(null,null, $nombre,$propietario, 0);
     }
 
     private static function generarNombreAleatorio() {
@@ -18,7 +18,7 @@ class TerritorioFactory {
     public static function generarTerritorios($numCasillas){
         $territorios = [];
         for ($i=0; $i < $numCasillas; $i++) {
-            ($i % 2 == 0) ? $propietario="m" :  $propietario="u";
+            ($i % 2 == 0) ? $propietario="M" :  $propietario="U";
             $territorios[] = self::crearTerritorio($propietario);
         }
         shuffle($territorios);
