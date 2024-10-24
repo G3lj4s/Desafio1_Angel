@@ -127,7 +127,7 @@ class ControladorJuego{
         ConexionBDPartida::actualizarPartida($partida);
         echo json_encode(['message' => ['listo para jugar' => $partida]]);
     }
-    public static function mover($datosRecibidos,$idPartida,$usuario){
+    public static function mover($datosRecibidos,$idPartida){
         $datosRecibidos = json_decode($datosRecibidos, true);
     
         if (!isset($datosRecibidos['email']) || !isset($datosRecibidos['password'])) {
@@ -168,8 +168,6 @@ class ControladorJuego{
             return;
         }
         if ($partida->comprobarNumCelda($datosRecibidos['move'])) {
-            echo ($datosRecibidos['move']['origen']);
-            echo ($datosRecibidos['move']['destino']);
             echo json_encode(['message' => 'no existe esa casilla']);
             return;
         }
@@ -178,11 +176,15 @@ class ControladorJuego{
             return;
         }
         if ($partida->comprobarPropietario($datosRecibidos['move'],$usuario->getId())) {
-            echo json_encode(['message' => 'error en los propietarios de las casillas']);
+            echo json_encode(['message' => 'no te pertenezan esa casilla']);
+            return;
+        }
+        if ($partida->comprobarPropietarioCelda($datosRecibidos['move'])) {
+            echo json_encode(['message' => 'una de las casillas no es tuya']);
             return;
         }
         if ($partida->comprobarCantidades($datosRecibidos['move'])) {
-            echo json_encode(['message' => 'no hay suficientes tropas']);
+            echo json_encode(['message' => 'error en la cantidad de tropas']);
             return;
         }
 
@@ -193,7 +195,82 @@ class ControladorJuego{
         ConexionBDPartida::actualizarPartida($partida);
         echo json_encode(['message' => 'el movimiento se ha realizado con exito']);
     }
-    public static function atacar($datosRecibidos){
+    public static function atacar($datosRecibidos,$idPartida){
+        $datosRecibidos = json_decode($datosRecibidos, true);
+    
+        if (!isset($datosRecibidos['email']) || !isset($datosRecibidos['password'])) {
+            echo json_encode(['message' => 'datos incompletos']);
+            return;
+        }
+    
+        $usuario = ConexionBDUsuario::obtenerUsuarioEmail($datosRecibidos['email']);
+    
+        if ($usuario == null) {
+            echo json_encode(['message' => 'este usuario no existe en el sistema']);
+            return;
+        }
+    
+        if ($usuario->getPassword() != $datosRecibidos['password']) {
+            echo json_encode(['message' => 'la password del usuario no es correcta']);
+            return;
+        }
+        $partida = ConexionBDPartida::obtenerPartida($idPartida, $usuario->getId());
+        if ($partida == null) {
+            echo json_encode(['message' => 'error al encontrar la partida']);
+            return;
+        }
+        if ($partida->getEstado() == 0) {
+            echo json_encode(['message' => 'tienes que distribuir las tropas primero']);
+            return;
+        }
+        if ($partida->getEstado() != 1) {
+            echo json_encode(['message' => 'la partida ya ha terminado']);
+            return;
+        }
+        if ($partida->getUltimoJugador() == $usuario->getId()) {
+            echo json_encode(['message' => 'no es tu turno']);
+            return;
+        }
+        if (!isset($datosRecibidos['attack'])) {
+            echo json_encode(['message' => 'te falta especificar el ataque']);
+            return;
+        }
+        if ($partida->comprobarNumCelda($datosRecibidos['attack'])) {
+            echo json_encode(['message' => 'no existe esa casilla']);
+            return;
+        }
+        if ($partida->comprobarCercania($datosRecibidos['attack'])) {
+            echo json_encode(['message' => 'estas casillas no estan adyacentes']);
+            return;
+        }
+        if ($partida->comprobarPropietario($datosRecibidos['attack'],$usuario->getId())) {
+            echo json_encode(['message' => 'no te pertenezan esa casilla']);
+            return;
+        }
+        if (!$partida->comprobarPropietarioCelda($datosRecibidos['attack'])) {
+            echo json_encode(['message' => 'no puedes ataquarte a ti mismo']);
+            return;
+        }
+        if ($partida->comprobarCantidades($datosRecibidos['attack'])) {
+            echo json_encode(['message' => 'error en la cantidad de tropas']);
+            return;
+        }
+
+        if($partida->realizarAtaque($datosRecibidos['attack'])) {
+            $respuesta = ['message' => 'has ganado el ataque'];
+            if($partida->comprobarGanador()) {
+                $respuesta['message'] .= ' y la partida ha terminado';
+                $respuesta['ganador'] = $partida->getUltimoJugador();
+            }
+            echo json_encode($respuesta);
+        } else {
+            echo json_encode(['message' => 'has perdido el ataque']);
+        }
+        
+        $partida->setUltimoJugador($usuario->getId());
+
+        ConexionBDPartida::actualizarTerritorios($partida->getTerritorios());
+        ConexionBDPartida::actualizarPartida($partida);
         
     }
     public static function cambiarTurno($datosRecibidos){

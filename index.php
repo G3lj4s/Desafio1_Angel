@@ -80,13 +80,12 @@ if ($action == 'ADMIN') {
         //POST /gamer/move/${idPartida}: mueve tus tropas
         $idPartida = isset($parametros[3]) && !empty($parametros[3]) ? intval($parametros[3]) : 0;
 
-        ControladorJuego::mover($datosRecibidos,$idPartida,'U');
+        ControladorJuego::mover($datosRecibidos,$idPartida);
     }else if($requestMethod == 'POST' && $gameAction == 'ATTACK' && $datosRecibidos){
         //POST /gamer/attack/${idPartida}: realiza un ataque
         $idPartida = isset($parametros[3]) && !empty($parametros[3]) ? intval($parametros[3]) : 0;
 
-        ControladorJuego::atacar($datosRecibidos);
-        echo json_encode(['message' => 'se ataca']);
+        ControladorJuego::atacar($datosRecibidos,$idPartida,);
     }else if($requestMethod == 'GET' && $gameAction == 'FINISH') {
         //POST /gamer/finish//${idPartida} termina el tuno de el jugador y si el oponente es una maquina realiza su turno
         ControladorJuego::cambiarTurno($datosRecibidos);

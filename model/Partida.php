@@ -55,52 +55,53 @@ class Partida{
             return $comprobacion;
     }
     public function comprobarCeldasVacias(){
-        $comprobacion = false;
         foreach ($this->getTerritorios() as $territorio) {
                 if ($territorio->getNumTropas() == 0) {
-                    $comprobacion = true;
+                    return true;
                 }
             }
-        return $comprobacion;
+        return false;
     }
     public function comprobarNumCelda($movimiento){
-        $comprobacion = false;
         if ($movimiento['origen']-1 <0 || $movimiento['origen']-1 >=count($this->getTerritorios())) {
-            $comprobacion = true;
+            return true;
         }
         if ($movimiento['destino']-1 <0 || $movimiento['destino']-1 >=count($this->getTerritorios())) {
-            $comprobacion = true;
+            return true;
         }
-        return $comprobacion;
+        return false;
     }
     public function comprobarCercania($movimiento){
         $distancia = $movimiento['origen'] - $movimiento['destino'];
-        $adyacente = false;
         if ($distancia > 1 || $distancia < -1) {
-            $adyacente = true;
+            return true;
         }
-        return $adyacente;
+        return false;
     }
-    public function comprobarPropietario($movimiento, $idUsuario){
-        $comprobacion = false;
+    public function comprobarPropietarioCelda($movimiento){
         $propietarioOrigen = $this->getTerritorios()[$movimiento['origen']-1]->getPropietario();
         $propietarioDestino = $this->getTerritorios()[$movimiento['destino']-1]->getPropietario();
         if($propietarioOrigen != $propietarioDestino){
-            $comprobacion = true;
+            return true;
         };
-        if ($propietarioDestino != $idUsuario) {
-            $comprobacion = true;
-        }
-        return $comprobacion;
+        return false;
+    }
+    public function comprobarPropietario($movimiento,$idUsuario){
+        $propietarioOrigen = $this->getTerritorios()[$movimiento['origen']-1]->getPropietario();
+        if($propietarioOrigen != $idUsuario){
+            return true;
+        };
+        return false;
     }
     public function comprobarCantidades($movimiento){
-        $comprobacion = false;
         $cantidad = $movimiento['cantidad'];
         $numTropasOrigen = $this->getTerritorios()[$movimiento['origen']-1]->getNumTropas();
+        if ($cantidad <= 0) {
+            return true;
+        }
         if($numTropasOrigen - $cantidad < 1){
-            $comprobacion = true;
+            return true;
         };
-        return $comprobacion;
     }
     public function realizarMovimiento($movimiento){
         $cantidad = $movimiento['cantidad'];
@@ -111,7 +112,62 @@ class Partida{
         $destino = $this->getTerritorios()[$movimiento['destino'] - 1];
         $destino->setNumTropas($destino->getNumTropas() + $cantidad);
     }
-
+    public function realizarAtaque($movimiento) {
+        $cantidad = $movimiento['cantidad'];
+        $origen = $this->getTerritorios()[$movimiento['origen'] - 1];
+        $destino = $this->getTerritorios()[$movimiento['destino'] - 1];
+    
+        $origen->setNumTropas($origen->getNumTropas() - $cantidad);
+    
+        $dadosAtacante = $this->lanzarDados(min($cantidad, 3));
+        $dadosDefensor = $this->lanzarDados(min($destino->getNumTropas(), 2));
+    
+        rsort($dadosAtacante);
+        rsort($dadosDefensor);
+        
+        foreach ($dadosDefensor as $i => $dadoDef) {
+            if (isset($dadosAtacante[$i])) {
+                if ($dadosAtacante[$i] > $dadoDef) {
+                    $destino->setNumTropas($destino->getNumTropas() - 1);
+                } else {
+                    $origen->setNumTropas($origen->getNumTropas() - 1);
+                    $cantidad--;
+                    if ($cantidad <= 0) break;
+                }
+            }
+        }
+    
+        if ($destino->getNumTropas() <= 0) {
+            $destino->setPropietario($origen->getPropietario());
+            $destino->setNumTropas($cantidad);
+            return true;
+        }
+        return false;
+    }
+    
+    public function lanzarDados($numDados) {
+        $dados = [];
+        for ($i = 0; $i < $numDados; $i++) {
+            $dados[] = rand(1, 6);
+        }
+        return $dados;
+    }
+    public function comprobarGanador() {
+        $territorios = $this->getTerritorios();
+        
+        $propietarioInicial = $territorios[0]->getPropietario();
+        foreach ($territorios as $territorio) {
+            if ($territorio->getPropietario() != $propietarioInicial) {
+                return false;
+            }
+        }
+        if ($propietarioInicial == 0) {
+            $this->setEstado(3);
+        }else{
+            $this->setEstado(2);
+        }
+        return true;
+    }    
     // Getters
     public function getId() {
         return $this->id;
