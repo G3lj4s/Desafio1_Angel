@@ -15,10 +15,10 @@ class TerritorioFactory {
         ];
         return $nombresPosibles[array_rand($nombresPosibles)];
     }
-    public static function generarTerritorios($numCasillas){
+    public static function generarTerritorios($numCasillas, $idUsuario){
         $territorios = [];
         for ($i=0; $i < $numCasillas; $i++) {
-            ($i % 2 == 0) ? $propietario="M" :  $propietario="U";
+            ($i % 2 == 0) ? $propietario=-1 :  $propietario=$idUsuario;
             $territorios[] = self::crearTerritorio($propietario);
         }
         shuffle($territorios);

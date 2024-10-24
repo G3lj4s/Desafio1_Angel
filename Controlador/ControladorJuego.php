@@ -73,12 +73,11 @@ class ControladorJuego{
         }
     
         $idPartida = ConexionBDPartida::crearPartida($usuario, $numTropas);
-        $territorios = TerritorioFactory::generarTerritorios($numCasillas);
+        $territorios = TerritorioFactory::generarTerritorios($numCasillas,$usuario->getId());
         ConexionBDPartida::crearTerritorios($territorios, $idPartida);
     
         echo json_encode(['message' => 'partida creada con id: ' . $idPartida]);
     }
-    
     public static function distribuir($datosRecibidos, $idPartida){
         $datosRecibidos = json_decode($datosRecibidos, true);
     
@@ -114,10 +113,10 @@ class ControladorJuego{
                 return;
             }
             $partida->distribuirTropasManual($datosRecibidos['distribucion'],'U');
-            $partida->distribuirTropasAleatoriamente('M');
+            $partida->distribuirTropasAleatoriamente( $usuario->getId());
         }else{
-            $partida->distribuirTropasAleatoriamente('U');
-            $partida->distribuirTropasAleatoriamente('M');
+            $partida->distribuirTropasAleatoriamente($usuario->getId());
+            $partida->distribuirTropasAleatoriamente(-1);
         }
         if($partida->comprobarCeldasVacias()){
             echo json_encode(['message' => 'no puedes dejar celdas sin tropas']);
@@ -128,7 +127,7 @@ class ControladorJuego{
         ConexionBDPartida::actualizarPartida($partida);
         echo json_encode(['message' => ['listo para jugar' => $partida]]);
     }
-    public static function mover($datosRecibidos){
+    public static function mover($datosRecibidos,$idPartida,$usuario){
         $datosRecibidos = json_decode($datosRecibidos, true);
     
         if (!isset($datosRecibidos['email']) || !isset($datosRecibidos['password'])) {
@@ -147,6 +146,24 @@ class ControladorJuego{
             echo json_encode(['message' => 'la password del usuario no es correcta']);
             return;
         }
+        $partida = ConexionBDPartida::obtenerPartida($idPartida, $usuario->getId());
+        if ($partida == null) {
+            echo json_encode(['message' => 'error al encontrar la partida']);
+            return;
+        }
+        if ($partida->getEstado() == 0) {
+            echo json_encode(['message' => 'tienes que distribuir las tropas primero']);
+            return;
+        }
+        if ($partida->getEstado() != 1) {
+            echo json_encode(['message' => 'la partida ya ha terminado']);
+            return;
+        }
+        if ($partida->getUltimoJugador() == $usuario->getId()) {
+            echo json_encode(['message' => 'no es tu turno']);
+            return;
+        }
+
     }
     public static function atacar($datosRecibidos){
         

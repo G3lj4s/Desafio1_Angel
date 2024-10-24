@@ -121,7 +121,7 @@ class ConexionBDPartida {
             $nombre = $territorio->getNombre();
             $propietario = $territorio->getPropietario();
             $tropas = 0;
-            $stmt->bind_param("sssii", $posicion,$nombre, $propietario, $idPartida, $tropas);
+            $stmt->bind_param("ssiii", $posicion,$nombre, $propietario, $idPartida, $tropas);
             $stmt->execute();
         }
         

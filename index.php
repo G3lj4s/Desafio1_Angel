@@ -67,24 +67,31 @@ if ($action == 'ADMIN') {
 
         ControladorJuego::iniciarPartida($datosRecibidos, $numCasillas, $numTropas);
     }else if ($requestMethod == 'POST' && $gameAction == 'DISTRIBUTE' && $datosRecibidos) {
-        //POST /gamer/distribute: distribulle las tropas como se lo pases o distrubulle las tropas automaticamente
+        //POST /gamer/distribute/${idPartida}: distribulle las tropas como se lo pases o distrubulle las tropas automaticamente
         $idPartida = isset($parametros[3]) && !empty($parametros[3]) ? intval($parametros[3]) : 0;
         
         ControladorJuego::distribuir($datosRecibidos,$idPartida);
     }else if ($requestMethod == 'GET' && $gameAction == 'VIEW' && $datosRecibidos){
-        //GET /gamer/view: muestra la partida
+        //GET /gamer/view//${idPartida}: muestra la partida
         $idPartida = isset($parametros[3]) && !empty($parametros[3]) ? intval($parametros[3]) : 0;
+
         ControladorJuego::verPartida($datosRecibidos, $idPartida);
     }else if ($requestMethod == 'POST' && $gameAction == 'MOVE' && $datosRecibidos) {
-        //POST /gamer/move: mueve tus tropas
-            ControladorJuego::mover($datosRecibidos);
+        //POST /gamer/move//${idPartida}: mueve tus tropas
+        $idPartida = isset($parametros[3]) && !empty($parametros[3]) ? intval($parametros[3]) : 0;
+
+        ControladorJuego::mover($datosRecibidos,$idPartida,'U');
     }else if($requestMethod == 'POST' && $gameAction == 'ATTACK' && $datosRecibidos){
-        //POST /gamer/attack: realiza un ataque
+        //POST /gamer/attack/${idPartida}: realiza un ataque
+        $idPartida = isset($parametros[3]) && !empty($parametros[3]) ? intval($parametros[3]) : 0;
+
         ControladorJuego::atacar($datosRecibidos);
         echo json_encode(['message' => 'se ataca']);
     }else if($requestMethod == 'GET' && $gameAction == 'FINISH') {
-        //POST /gamer/finish termina el tuno de el jugador y si el oponente es una maquina realiza su turno
+        //POST /gamer/finish//${idPartida} termina el tuno de el jugador y si el oponente es una maquina realiza su turno
         ControladorJuego::cambiarTurno($datosRecibidos);
+        $idPartida = isset($parametros[3]) && !empty($parametros[3]) ? intval($parametros[3]) : 0;
+
         echo json_encode(['message' => 'cambio de turno']);
     }else{
         echo json_encode(['error' => 'error ruta gamer']);
