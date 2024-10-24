@@ -23,15 +23,15 @@ class ConexionBDPartida {
             return 0;
         }
     }
-    public static function obtenerPartida($id, $idUsuario) {
+    public static function obtenerPartida($id) {
         $conexion = ConexionBD::obtenerConexionBD();
         if ($conexion === null) {
             return null;
         }
 
-        $query = "SELECT * FROM partidas WHERE id = ? AND id_usuario = ?";
+        $query = "SELECT * FROM partidas WHERE id = ? ";
         $stmt = $conexion->prepare($query);
-        $stmt->bind_param("ii", $id, $idUsuario);
+        $stmt->bind_param("i", $id);
         $stmt->execute();
         $resultados = $stmt->get_result();
 

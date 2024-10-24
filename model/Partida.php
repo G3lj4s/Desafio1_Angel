@@ -25,15 +25,10 @@ class Partida{
             }
         }
     }
-    public function distribuirTropasAleatoriamente($usuario) {
+    public function distribuirTropasAleatoriamente($idUsuario) {
         $tropasARepartir = intval($this->numTropas / 2);
-        $territoriosUsuario = [];
+        $territoriosUsuario = self::obtenerTerritorioUsuario($idUsuario);
 
-        foreach ($this->territorios as $territorio) {
-            if ($territorio->getPropietario() == $usuario) {
-                $territoriosUsuario[] = $territorio;
-            }
-        }
 
         foreach ($territoriosUsuario as $territorio) {
             $territorio->setNumTropas(1);
@@ -46,6 +41,15 @@ class Partida{
             $territorioAleatorio->setNumTropas($territorioAleatorio->getNumTropas() + 1);
             $tropasARepartir--;
         }
+    }
+    public function obtenerTerritorioUsuario($idUsuario){
+        $territoriosUsuario = [];
+        foreach ($this->territorios as $territorio) {
+            if ($territorio->getPropietario() == $idUsuario) {
+                $territoriosUsuario[] = $territorio;
+            }
+        }
+        return $territoriosUsuario;
     }
     public function contarTropasUsuario($distribuciones){
         $comprobacion = 0;

@@ -87,11 +87,10 @@ if ($action == 'ADMIN') {
 
         ControladorJuego::atacar($datosRecibidos,$idPartida,);
     }else if($requestMethod == 'GET' && $gameAction == 'FINISH') {
-        //POST /gamer/finish//${idPartida} termina el tuno de el jugador y si el oponente es una maquina realiza su turno
-        ControladorJuego::cambiarTurno($datosRecibidos);
+        //POST /gamer/finish/${idPartida} termina el tuno de el jugador y si el oponente es una maquina realiza su turno
         $idPartida = isset($parametros[3]) && !empty($parametros[3]) ? intval($parametros[3]) : 0;
-
-        echo json_encode(['message' => 'cambio de turno']);
+        
+        ControladorJuego::cambiarTurno($idPartida);
     }else{
         echo json_encode(['error' => 'error ruta gamer']);
     }
