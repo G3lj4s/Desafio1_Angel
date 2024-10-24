@@ -86,6 +86,11 @@ if ($action == 'ADMIN') {
         $idPartida = isset($parametros[3]) && !empty($parametros[3]) ? intval($parametros[3]) : 0;
 
         ControladorJuego::atacar($datosRecibidos,$idPartida,);
+    }else if($requestMethod == 'GET' && $gameAction == 'NEWTROOPS') {
+        //POST /gamer/newtroops/${idPartida} termina el tuno de el jugador y si el oponente es una maquina realiza su turno
+        $idPartida = isset($parametros[3]) && !empty($parametros[3]) ? intval($parametros[3]) : 0;
+        
+        ControladorJuego::nuevasTropas($datosRecibidos, $idPartida);
     }else if($requestMethod == 'GET' && $gameAction == 'FINISH') {
         //POST /gamer/finish/${idPartida} termina el tuno de el jugador y si el oponente es una maquina realiza su turno
         $idPartida = isset($parametros[3]) && !empty($parametros[3]) ? intval($parametros[3]) : 0;

@@ -103,7 +103,7 @@ class Partida{
         if ($cantidad <= 0) {
             return true;
         }
-        if($numTropasOrigen - $cantidad < 1){
+        if($numTropasOrigen - $cantidad <= 0){
             return true;
         };
     }
@@ -120,12 +120,11 @@ class Partida{
         $cantidad = $movimiento['cantidad'];
         $origen = $this->getTerritorios()[$movimiento['origen'] - 1];
         $destino = $this->getTerritorios()[$movimiento['destino'] - 1];
-    
+        
         $origen->setNumTropas($origen->getNumTropas() - $cantidad);
-    
         $dadosAtacante = $this->lanzarDados(min($cantidad, 3));
         $dadosDefensor = $this->lanzarDados(min($destino->getNumTropas(), 2));
-    
+        
         rsort($dadosAtacante);
         rsort($dadosDefensor);
         
@@ -134,18 +133,20 @@ class Partida{
                 if ($dadosAtacante[$i] > $dadoDef) {
                     $destino->setNumTropas($destino->getNumTropas() - 1);
                 } else {
-                    $origen->setNumTropas($origen->getNumTropas() - 1);
                     $cantidad--;
                     if ($cantidad <= 0) break;
+                    $origen->setNumTropas($origen->getNumTropas() - 1);
                 }
             }
         }
-    
+        
         if ($destino->getNumTropas() <= 0) {
             $destino->setPropietario($origen->getPropietario());
             $destino->setNumTropas($cantidad);
             return true;
         }
+    
+        $origen->setNumTropas($origen->getNumTropas() + $cantidad);
         return false;
     }
     
@@ -155,6 +156,23 @@ class Partida{
             $dados[] = rand(1, 6);
         }
         return $dados;
+    }
+    public function obtenerEjercitosIniciales($idUsuario) {
+        $numTerritorios = count(self::obtenerTerritorioUsuario($idUsuario));
+        $ejercitos = max(floor($numTerritorios / 3), 3);
+        return $ejercitos;
+    }
+
+    public function colocarEjercitosAleatoriamente($idUsuario) {
+        $territorios = self::obtenerTerritorioUsuario($idUsuario);
+        $ejercitos = self::obtenerEjercitosIniciales($idUsuario);
+        while ($ejercitos > 0) {
+            $territorio = $territorios[array_rand($territorios)];
+            $territorio->setNumTropas(
+                $territorio->getNumTropas() + 1
+            );
+            $ejercitos--;
+        }
     }
     public function comprobarGanador() {
         $territorios = $this->getTerritorios();
