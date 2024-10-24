@@ -119,6 +119,10 @@ class ControladorJuego{
             $partida->distribuirTropasAleatoriamente('U');
             $partida->distribuirTropasAleatoriamente('M');
         }
+        if($partida->comprobarCeldasVacias()){
+            echo json_encode(['message' => 'no puedes dejar celdas sin tropas']);
+            return;
+        }
         $partida->setEstado('1');
         ConexionBDPartida::actualizarTerritorios($partida->getTerritorios());
         ConexionBDPartida::actualizarPartida($partida);

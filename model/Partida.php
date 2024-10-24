@@ -54,6 +54,16 @@ class Partida{
             }
             return $comprobacion;
     }
+    public function comprobarCeldasVacias(){
+        $comprobacion = false;
+        foreach ($this->getTerritorios() as $territorio) {
+                if ($territorio->getNumTropas() == 0) {
+                    $comprobacion = true;
+                }
+            }
+        return $comprobacion;
+    }
+
     // Getters
     public function getId() {
         return $this->id;
