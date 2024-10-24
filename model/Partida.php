@@ -63,6 +63,54 @@ class Partida{
             }
         return $comprobacion;
     }
+    public function comprobarNumCelda($movimiento){
+        $comprobacion = false;
+        if ($movimiento['origen']-1 <0 || $movimiento['origen']-1 >=count($this->getTerritorios())) {
+            $comprobacion = true;
+        }
+        if ($movimiento['destino']-1 <0 || $movimiento['destino']-1 >=count($this->getTerritorios())) {
+            $comprobacion = true;
+        }
+        return $comprobacion;
+    }
+    public function comprobarCercania($movimiento){
+        $distancia = $movimiento['origen'] - $movimiento['destino'];
+        $adyacente = false;
+        if ($distancia > 1 || $distancia < -1) {
+            $adyacente = true;
+        }
+        return $adyacente;
+    }
+    public function comprobarPropietario($movimiento, $idUsuario){
+        $comprobacion = false;
+        $propietarioOrigen = $this->getTerritorios()[$movimiento['origen']-1]->getPropietario();
+        $propietarioDestino = $this->getTerritorios()[$movimiento['destino']-1]->getPropietario();
+        if($propietarioOrigen != $propietarioDestino){
+            $comprobacion = true;
+        };
+        if ($propietarioDestino != $idUsuario) {
+            $comprobacion = true;
+        }
+        return $comprobacion;
+    }
+    public function comprobarCantidades($movimiento){
+        $comprobacion = false;
+        $cantidad = $movimiento['cantidad'];
+        $numTropasOrigen = $this->getTerritorios()[$movimiento['origen']-1]->getNumTropas();
+        if($numTropasOrigen - $cantidad < 1){
+            $comprobacion = true;
+        };
+        return $comprobacion;
+    }
+    public function realizarMovimiento($movimiento){
+        $cantidad = $movimiento['cantidad'];
+
+        $origen = $this->getTerritorios()[$movimiento['origen'] - 1];
+        $origen->setNumTropas($origen->getNumTropas() - $cantidad);
+
+        $destino = $this->getTerritorios()[$movimiento['destino'] - 1];
+        $destino->setNumTropas($destino->getNumTropas() + $cantidad);
+    }
 
     // Getters
     public function getId() {

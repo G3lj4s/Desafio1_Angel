@@ -112,7 +112,7 @@ class ControladorJuego{
                 echo json_encode(['message' => 'el numero de tropas a repartir no es el correcto tienes que repartir '.($partida->getNumTropas()/2).' y estas repartirendo '.$numTropas]);
                 return;
             }
-            $partida->distribuirTropasManual($datosRecibidos['distribucion'],'U');
+            $partida->distribuirTropasManual($datosRecibidos['distribucion'],$usuario->getId());
             $partida->distribuirTropasAleatoriamente( $usuario->getId());
         }else{
             $partida->distribuirTropasAleatoriamente($usuario->getId());
@@ -163,7 +163,35 @@ class ControladorJuego{
             echo json_encode(['message' => 'no es tu turno']);
             return;
         }
+        if (!isset($datosRecibidos['move'])) {
+            echo json_encode(['message' => 'te falta especificar el movimiento']);
+            return;
+        }
+        if ($partida->comprobarNumCelda($datosRecibidos['move'])) {
+            echo ($datosRecibidos['move']['origen']);
+            echo ($datosRecibidos['move']['destino']);
+            echo json_encode(['message' => 'no existe esa casilla']);
+            return;
+        }
+        if ($partida->comprobarCercania($datosRecibidos['move'])) {
+            echo json_encode(['message' => 'estas casillas no estan adyacentes']);
+            return;
+        }
+        if ($partida->comprobarPropietario($datosRecibidos['move'],$usuario->getId())) {
+            echo json_encode(['message' => 'error en los propietarios de las casillas']);
+            return;
+        }
+        if ($partida->comprobarCantidades($datosRecibidos['move'])) {
+            echo json_encode(['message' => 'no hay suficientes tropas']);
+            return;
+        }
 
+        $partida->realizarMovimiento($datosRecibidos['move']);
+        $partida->setUltimoJugador($usuario->getId());
+
+        ConexionBDPartida::actualizarTerritorios($partida->getTerritorios());
+        ConexionBDPartida::actualizarPartida($partida);
+        echo json_encode(['message' => 'el movimiento se ha realizado con exito']);
     }
     public static function atacar($datosRecibidos){
         

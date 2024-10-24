@@ -77,7 +77,7 @@ if ($action == 'ADMIN') {
 
         ControladorJuego::verPartida($datosRecibidos, $idPartida);
     }else if ($requestMethod == 'POST' && $gameAction == 'MOVE' && $datosRecibidos) {
-        //POST /gamer/move//${idPartida}: mueve tus tropas
+        //POST /gamer/move/${idPartida}: mueve tus tropas
         $idPartida = isset($parametros[3]) && !empty($parametros[3]) ? intval($parametros[3]) : 0;
 
         ControladorJuego::mover($datosRecibidos,$idPartida,'U');
