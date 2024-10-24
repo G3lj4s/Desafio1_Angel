@@ -2,7 +2,9 @@
 
 header("Content-Type:application/json");
 
-include_once("Controlador.php");
+require_once __DIR__ . "/Controlador/ControladorAdmin.php";
+require_once __DIR__ . "/Controlador/ControladorUsuario.php";
+require_once __DIR__ . "/Controlador/ControladorJuego.php";
 
 $requestMethod = $_SERVER["REQUEST_METHOD"];
 $paths = $_SERVER['REQUEST_URI'];
@@ -17,20 +19,20 @@ if ($action == 'ADMIN') {
 
     if ($requestMethod == 'GET' && $adminAction == 'USERS' && $datosRecibidos) {
         //GET /admin/users: Consultar lista de usuarios.
-        Controlador::mostrarUsuarios($datosRecibidos);
+        ControladorAdmin::mostrarUsuarios($datosRecibidos);
 
     } else if ($requestMethod == 'POST' && $adminAction == 'USERS' && $datosRecibidos) {
         //POST /admin/users: Crear un nuevo usuario (con detalles como nombre, rol, etc.)
-        Controlador::crearUsuarios($datosRecibidos);
+        ControladorAdmin::crearUsuarios($datosRecibidos);
 
     }else if ($requestMethod == 'PUT' && $adminAction == 'USERS' && $datosRecibidos) {
         //PUT /admin/users: Modificar detalles de un usuario existente (nombre, contraseña, rol, etc.).
-        Controlador::modificarUsuario($datosRecibidos);
+        ControladorAdmin::modificarUsuario($datosRecibidos);
 
     }else if($requestMethod == 'DELETE' && $adminAction == 'USERS' && isset($parametros[3]) && !empty($parametros[3])){
         //DELETE /admin/users{$id}: Eliminar un usuario por su ID.
         $id = $parametros[3];
-        Controlador::eliminarUsuario($id,$datosRecibidos);
+        ControladorAdmin::eliminarUsuario($id,$datosRecibidos);
 
     }else {
         echo json_encode(['error' => 'error en la ruta de admin']);
@@ -41,15 +43,15 @@ if ($action == 'ADMIN') {
 
     if ($requestMethod == 'GET' && $userAction == 'PROFILE' && $datosRecibidos) {
         //GET /user/profile: Consultar información del perfil del usuario.
-        Controlador::mostrarPerfil($datosRecibidos);
+        ControladorUsuario::mostrarPerfil($datosRecibidos);
 
     } else if ($requestMethod == 'PUT' && $userAction == 'PROFILE' && $datosRecibidos) {
         //PUT /user/profile: Modificar detalles del perfil (cambiar contraseña que genere el servido y la pasa al gmail asociado).
-        Controlador::cambiarPassword($datosRecibidos);
+        ControladorUsuario::cambiarPassword($datosRecibidos);
 
     }else if ($requestMethod == 'GET' && $userAction == 'STATS' && $datosRecibidos) {
         //GET /user/stats: Consultar estadísticas del jugador (partidas ganadas, perdidas, etc.).
-        echo json_encode(['message' => 'te mostrará un json con las estadísticas']);
+        ControladorUsuario::mostrarStats($datosRecibidos);
 
     }else{
         echo json_encode(['error' => 'error en la ruta de user']);
@@ -58,31 +60,42 @@ if ($action == 'ADMIN') {
 }else if($action == 'GAMER'){
     $gameAction = isset($parametros[2]) && !empty($parametros[2]) ? strtoupper($parametros[2]) :'';
     
-    if ($requestMethod == 'POST' && $gameAction == 'CREATE'){
-        if ($datosRecibidos) {
-            //POST /gamer/create: crea una partida personalizada
-            echo json_encode(['message' => 'Crea la partida con lo que le pase']);
-        }else{
-            //POST /gamer/create: crea una partida estandar
-            echo json_encode(['message' => 'crea una partida aleatoria']);
-        }
-    }else if ($requestMethod == 'POST' && $gameAction == 'DISTRIBUTE') {
-        if ($datosRecibidos) {
-            //POST /gamer/distribute: distribulle las tropas como se lo pases
-            echo json_encode(['message' => 'distribución como quieras']);
-        }else{
-            //POST /gamer/distribute: distrubulle las tropas automaticamente
-            echo json_encode(['message' => 'distribución automática']);
-        }
+    if ($requestMethod == 'POST' && $gameAction == 'CREATE' && $datosRecibidos){
+        //POST /gamer/create${numerocasillas?}/${numerotropas}: crea una partida personalizada o crea una partida estandar
+        $numCasillas = isset($parametros[3]) && !empty($parametros[3]) ? intval($parametros[3]) : 0;
+        $numTropas = isset($parametros[4]) && !empty($parametros[4]) ? intval($parametros[4]) : 0;
+
+        ControladorJuego::iniciarPartida($datosRecibidos, $numCasillas, $numTropas);
+    }else if ($requestMethod == 'POST' && $gameAction == 'DISTRIBUTE' && $datosRecibidos) {
+        //POST /gamer/distribute/${idPartida}: distribulle las tropas como se lo pases o distrubulle las tropas automaticamente
+        $idPartida = isset($parametros[3]) && !empty($parametros[3]) ? intval($parametros[3]) : 0;
+        
+        ControladorJuego::distribuir($datosRecibidos,$idPartida);
+    }else if ($requestMethod == 'GET' && $gameAction == 'VIEW' && $datosRecibidos){
+        //GET /gamer/view//${idPartida}: muestra la partida
+        $idPartida = isset($parametros[3]) && !empty($parametros[3]) ? intval($parametros[3]) : 0;
+
+        ControladorJuego::verPartida($datosRecibidos, $idPartida);
     }else if ($requestMethod == 'POST' && $gameAction == 'MOVE' && $datosRecibidos) {
-        //POST /gamer/move: mueve tus tropas
-        echo json_encode(['message' => 'se mueven las tropas']);
+        //POST /gamer/move/${idPartida}: mueve tus tropas
+        $idPartida = isset($parametros[3]) && !empty($parametros[3]) ? intval($parametros[3]) : 0;
+
+        ControladorJuego::mover($datosRecibidos,$idPartida);
     }else if($requestMethod == 'POST' && $gameAction == 'ATTACK' && $datosRecibidos){
-        //POST /gamer/attack: realiza un ataque
-        echo json_encode(['message' => 'se ataca']);
+        //POST /gamer/attack/${idPartida}: realiza un ataque
+        $idPartida = isset($parametros[3]) && !empty($parametros[3]) ? intval($parametros[3]) : 0;
+
+        ControladorJuego::atacar($datosRecibidos,$idPartida,);
+    }else if($requestMethod == 'GET' && $gameAction == 'NEWTROOPS') {
+        //POST /gamer/newtroops/${idPartida} termina el tuno de el jugador y si el oponente es una maquina realiza su turno
+        $idPartida = isset($parametros[3]) && !empty($parametros[3]) ? intval($parametros[3]) : 0;
+        
+        ControladorJuego::nuevasTropas($datosRecibidos, $idPartida);
     }else if($requestMethod == 'GET' && $gameAction == 'FINISH') {
-        //POST /gamer/finish termina el tuno de el jugador y si el oponente es una maquina realiza su turno
-        echo json_encode(['message' => 'cambio de turno']);
+        //POST /gamer/finish/${idPartida} termina el tuno de el jugador y si el oponente es una maquina realiza su turno
+        $idPartida = isset($parametros[3]) && !empty($parametros[3]) ? intval($parametros[3]) : 0;
+        
+        ControladorJuego::cambiarTurno($idPartida);
     }else{
         echo json_encode(['error' => 'error ruta gamer']);
     }

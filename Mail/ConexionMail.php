@@ -3,9 +3,9 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 
-require_once 'PHPMailer-master/src/PHPMailer.php';
-require_once 'PHPMailer-master/src/SMTP.php';
-require_once 'Config.php';
+require_once  __DIR__ . '/PHPMailer-master/src/PHPMailer.php';
+require_once  __DIR__ . '/PHPMailer-master/src/SMTP.php';
+require_once  __DIR__ . '/../Config.php';
 
 class ConexionMail {
     public static function obtenerConexionMail() {
